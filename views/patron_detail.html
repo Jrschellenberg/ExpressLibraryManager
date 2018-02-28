@@ -2,8 +2,8 @@
 <html>
 
 <head>
-    <title>Checked Out Books</title>
-    <link rel="stylesheet" href="stylesheets/style.css">
+    <title>Andrew Chalkley</title>
+    <link rel="stylesheet" href="../stylesheets/style.css">
 </head>
 <nav>
     <ul>
@@ -14,9 +14,17 @@
 </nav>
 
 <body>
-    <h1>Checked Out Books</h1>
-    <p> <a href="new_loan.html" class="button">Create New Loan</a></p>
-    <p>Filters <a href="all_loans.html">All</a> | <a href="overdue_loans.html">Overdue</a> | <a href="checked_loans.html">Checked Out</a></p>
+    <h1>Patron: Andrew Chalkley</h1>
+    <form>
+        <p> <label for="first_name">First Name</label><input id="first_name" type="text" value="Andrew"></p>
+        <p> <label for="last_name">Last Name</label><input id="last_name" type="text" value="Chalkley"></p>
+        <p><label for="address"> Address</label><input id="address" type="text" value="1234 NE 20st St"></p>
+        <p><label for="email">Email</label><input id="email" type="text" value="andrew.chalkley@teamtreehouse.com"></p>
+        <p> <label for="library_id">Library ID</label><input id="library_id" type="text" value="MCL1001"></p>
+        <p><label for="zip_code">Zip Code</label><input id="zip_code" type="text" value="90210"></p>
+        <p><input type="submit" value="Update"></p>
+    </form>
+    <h2>Loan History</h2>
     <table>
         <thead>
             <tr>
@@ -30,14 +38,6 @@
         </thead>
         <tbody>
             <tr>
-                <td><a href="book_detail.html">Emma</a></td>
-                <td><a href="patron_detail.html">Dave McFarland</a></td>
-                <td>2015-12-10</td>
-                <td>2020-10-20</td>
-                <td></td>
-                <td><a href="return_book.html" class="button">Return Book</a></td>
-            </tr>
-            <tr>
                 <td><a href="book_detail.html">Harry Potter and the Goblet of Fire</a></td>
                 <td><a href="patron_detail.html">Andrew Chalkley</a></td>
                 <td>2015-12-11</td>
@@ -50,14 +50,6 @@
                 <td><a href="patron_detail.html">Andrew Chalkley</a></td>
                 <td>2015-12-12</td>
                 <td>2015-12-19</td>
-                <td></td>
-                <td><a href="return_book.html" class="button">Return Book</a></td>
-            </tr>
-            <tr>
-                <td><a href="book_detail.html">The Universe in a Nutshell</a></td>
-                <td><a href="patron_detail.html">Alena Holligan</a></td>
-                <td>2015-12-13</td>
-                <td>2015-12-20</td>
                 <td></td>
                 <td><a href="return_book.html" class="button">Return Book</a></td>
             </tr>
