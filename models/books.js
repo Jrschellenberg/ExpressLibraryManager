@@ -9,8 +9,10 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     author: DataTypes.STRING,
     genre: DataTypes.STRING,
-    first_published: DataTypes.INTEGER
-  }, {});
+    first_published: DataTypes.INTEGER,
+  }, {
+    timestamps: false
+  });
   Books.associate = function(models) {
     Books.hasOne(models.Loans);
     // associations can be defined here
