@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     genre: DataTypes.STRING,
     first_published: DataTypes.INTEGER,
   }, {
-    timestamps: false
   });
   Books.associate = function(models) {
     Books.hasOne(models.Loans);

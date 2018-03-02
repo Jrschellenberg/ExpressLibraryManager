@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
     return_by: DataTypes.DATE,
     returned_on: DataTypes.DATE
   }, {
-    timestamps: false
   });
   Loans.associate = function(models) {
     Loans.belongsTo(models.Patrons);

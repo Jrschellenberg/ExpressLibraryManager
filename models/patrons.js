@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
     library_id: DataTypes.STRING,
     zip_code: DataTypes.INTEGER
   }, {
-    timestamps: false
   });
   Patrons.associate = function(models) {
     Patrons.hasMany(models.Loans);
