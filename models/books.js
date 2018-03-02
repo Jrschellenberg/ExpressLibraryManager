@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     first_published: DataTypes.INTEGER
   }, {});
   Books.associate = function(models) {
+    Books.hasOne(models.Loans);
     // associations can be defined here
   };
   return Books;
