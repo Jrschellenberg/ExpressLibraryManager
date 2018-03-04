@@ -24,26 +24,23 @@ router.get('/all', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-	//res.send("wtf?");
 	Books.findById(req.params.id).then((book) => {
-		//let loan = book.getLoans;
-		// res.render('book_detail', { title: book.title, book: book, loan: loan });
-		res.render('book_detail', { title: book.title, book: book});
-		
-		
-		// book.getLoan().then((loan) => {
-		// 	loan.getPatron().then((patron) => {
-		//		
-		//		
-		// 	})
-		// 	// loans.forEach((loan, index, array1 )=>{
-		// 	// 	Patrons.findById(loan.patron_id).then((patron) => {
-		// 	// 		loans[index].patron_id = patron.first_name + " " +patron.last_name;
-		// 	// 	});
-		//
-		// 	// });
-		//	
-		// });
+		book.getLoans().then((loans) => {
+			console.log(loans);
+			Patrons.findById(loans[0].dataValues.patron_id).then((patron) => {
+				//console.log(patron.first_name);
+				if(patron){ //Error handling for no patron name.
+					return patron.first_name + ' ' + patron.last_name;
+				}
+				return '';
+				}).then((patronName) => {
+				res.render('book_detail', { title: book.title, book: book, loans: loans, name: patronName});
+			});
+		}).catch(() => {
+			let loans = '';
+			let patronName = '';
+			res.render('book_detail', { title: book.title, book: book, loans: loans, name: patronName});
+		});
 	});
 });
 

@@ -16,25 +16,25 @@ block content
       input#first_published(type='text', value='#{book.first_published}')
     p
       input(type='submit', value='Update')
-  h2 Loan History
-  table
-    thead
-      tr
-        th Book
-        th Patron 
-        th Loaned on
-        th Return by 
-        th Returned on
-        th Action
-    tbody
-      for loan in loans
+    h2 Loan History
+    table
+      thead
         tr
-          td
-            a(href='book_detail.html') #{book.title}
-          td
-            a(href='patron_detail.html') #{loan.patron_id}
-          td #{loan.loaned_on}
-          td #{loan.return_by}
-          td #{loan.returned_on}
-          td
-            a.button(href='return_book.html') Return Book
+          th Book
+          th Patron 
+          th Loaned on
+          th Return by 
+          th Returned on
+          th Action
+      tbody
+        for loan in loans
+          tr
+            td
+              a(href='book_detail.html') #{book.title}
+            td
+              a(href='patron_detail.html') #{name}
+            td #{loan.loaned_on}
+            td #{loan.return_by}
+            td #{loan.returned_on}
+            td
+              a.button(href='return_book.html') Return Book
