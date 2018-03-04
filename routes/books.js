@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Books = require("../models").Books;
 const Patrons = require("../models").Patrons;
+const Loans = require("../models").Loans;
 const dateFormat = require('dateformat');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 
 /* GET users listing. */
@@ -21,11 +24,35 @@ router.get('/all', (req, res) => {
 	});
 });
 
+router.get('/overdue', (req, res) => {
+	Loans.findAll().then((loans) => {
+		console.log(loans.length);
+	});
+	
+	
+		Loans.findAll({
+			where: {
+				return_by: {
+					[Op.lte]: dateFormat(this.createdAt, "yyyy-mm-dd")
+				},
+				returned_on: null
+				
+			}
+		}).then((loans) => {
+			console.log(loans.length);
+			res.send("test");
+		}).catch((err) => {
+			console.log(err);
+			res.send(err);
+		});
+	
+});
+
+
 router.get('/return_book/:bookId/:patronName', (req, res) => {
 	Books.findById(req.params.bookId).then((book) => {
 		book.getLoans().then((loan) => {
-			let now = new Date();
-			let date = dateFormat(now, "yyyy-mm-dd");
+			let date = dateFormat(this.createdAt, "yyyy-mm-dd");
 			res.render('return_book', { title: 'Return '+book.title, book: book, date: date,
 				name: req.params.patronName, loan: loan[0] });
 		});
