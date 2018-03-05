@@ -7,6 +7,11 @@ const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
+function getBooks(loans){
+	return new Promise((resolve, reject)=>{
+
+	});
+}
 
 /* GET users listing. */
 
@@ -24,28 +29,55 @@ router.get('/all', (req, res) => {
 	});
 });
 
-router.get('/overdue', (req, res) => {
-	Loans.findAll().then((loans) => {
-		console.log(loans.length);
-	});
-	
-	
+router.get('/overdue', (req, res, next) => {
 		Loans.findAll({
 			where: {
 				return_by: {
 					[Op.lte]: dateFormat(this.createdAt, "yyyy-mm-dd")
 				},
 				returned_on: null
-				
 			}
 		}).then((loans) => {
-			console.log(loans.length);
-			res.send("test");
+			let books = [];
+			loans.forEach((loan) => {
+				Books.findById(loan.book_id).then((book) => {
+					books.push(book);
+				}).then(() => {
+					if(books.length === loans.length){
+						req.params.books = books;
+						next();
+					}
+				});
+			});
 		}).catch((err) => {
 			console.log(err);
-			res.send(err);
 		});
-	
+}, (req, res)=> {
+	res.render('all_books', { title: 'Express', books: req.params.books });
+});
+
+router.get('/checked_out', (req, res, next) => {
+	Loans.findAll({
+		where: {
+			returned_on: null	
+		}
+	}).then((loans) => {
+		let books = [];
+		loans.forEach((loan) => {
+			Books.findById(loan.book_id).then((book) => {
+				books.push(book);
+			}).then(() => {
+				if(books.length === loans.length){
+					req.params.books = books;
+					next();
+				}
+			});
+		});
+	}).catch((err) => {
+		console.log(err);
+	});
+}, (req, res)=> {
+	res.render('all_books', { title: 'Express', books: req.params.books });
 });
 
 
@@ -60,7 +92,7 @@ router.get('/return_book/:bookId/:patronName', (req, res) => {
 });
 
 //May have to come back to this. Only grabbing history for 1 patron atm..
-router.get('/:id', (req, res) => {
+router.get('/details/:id', (req, res) => {
 	Books.findById(req.params.id).then((book) => {
 		book.getLoans().then((loans) => {
 			Patrons.findById(loans[0].dataValues.patron_id).then((patron) => {
