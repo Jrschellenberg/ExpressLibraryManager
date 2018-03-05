@@ -15,8 +15,16 @@ function getBooks(loans){
 
 /* GET users listing. */
 
-router.get('/', (req, res) => {
-	res.render('test', { title: 'Express' });
+// router.get('/', (req, res) => {
+// 	res.render('test', { title: 'Express' });
+// });
+
+router.post('/', (req, res, next) => {
+	Books.create(req.body).then((book) => {
+		res.redirect("/books/details/" + book.id);
+	}).catch((err) => {
+		res.render("error", {});
+	});
 });
 
 router.get('/new', (req, res) => {
