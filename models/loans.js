@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
     return_by: DataTypes.DATE,
     returned_on: DataTypes.DATE
   }, {
+    instanceMethods: {
+      getBook: function(model) {
+        model.findById(this.id).then((book)=>{return book.title});
+      }
+    }
   });
   Loans.associate = function(models) {
     Loans.belongsTo(models.Patrons);

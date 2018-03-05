@@ -7,17 +7,6 @@ const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-function getBooks(loans){
-	return new Promise((resolve, reject)=>{
-
-	});
-}
-
-/* GET users listing. */
-
-// router.get('/', (req, res) => {
-// 	res.render('test', { title: 'Express' });
-// });
 
 router.post('/create', (req, res) => {
 	Books.create(req.body).then((book) => {
