@@ -26,17 +26,29 @@ router.get('/new', (req, res) => {
 	res.render('patrons/new_patron', { title: 'Express' });
 });
 
-router.get("/details/:id", (req, res) => {
+router.get("/details/:id", (req, res, next) => {
 	Patrons.findById(req.params.id).then((patron) => {
+		req.params.patron = patron;
 		patron.getLoans().then((loans) => {
-			loans[0].getTitle(Books).then((bookTitle) => {
-				console.log(bookTitle);
+			req.params.loans = loans;
+			let books = [];
+			loans.forEach((loan, index, arry) => {
+				Books.findById(loan.dataValues.book_id).then((book) => {
+						books.push(book.title);
+				}).then(() => {
+					if(books.length === loans.length){
+						req.params.books = books;
+						next();
+					}
+				});
 			});
-			
-			//res.render('patrons/patron_details', {title: 'Patrons', patron: patron, loans: loans});
 		});
+	}).catch((err) => {
+		console.log(err);
 	});
-	res.send("herro");
+}, (req, res)=> {
+	//res.send("WTF");
+	res.render('patrons/patron_details', {title: 'Patrons', patron: req.params.patron, loans: req.params.loans, books: req.params.books});
 });
 
 

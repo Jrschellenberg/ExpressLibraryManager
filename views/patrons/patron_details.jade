@@ -1,25 +1,25 @@
 extends ../layout
 block content
-  h1 Patron: Andrew Chalkley
-  form(action="/patrons/update/"+patron.id, method="post")
+  h1 Patron: #{patron.first_name} #{patron.last_name}
+  form(action="/patrons/update/" + patron.id, method="post")
     p
       label(for='first_name') First Name
-      input#first_name(type='text', value='Andrew', name="first_name")
+      input#first_name(type='text', value='#{patron.first_name}', name="first_name")
     p
       label(for='last_name') Last Name
-      input#last_name(type='text', value='Chalkley', name="last_name")
+      input#last_name(type='text', value='#{patron.last_name}', name="last_name")
     p
       label(for='address')  Address
-      input#address(type='text', value='1234 NE 20st St', name="address")
+      input#address(type='text', value='#{patron.address}', name="address")
     p
       label(for='email') Email
-      input#email(type='text', value='andrew.chalkley@teamtreehouse.com', name="email")
+      input#email(type='text', value='#{patron.email}', name="email")
     p
       label(for='library_id') Library ID
-      input#library_id(type='text', value='MCL1001', name="library_id")
+      input#library_id(type='text', value='#{patron.library_id}', name="library_id")
     p
       label(for='zip_code') Zip Code
-      input#zip_code(type='text', value='90210', name="zip_code")
+      input#zip_code(type='text', value='#{patron.zip_code}', name="zip_code")
     p
       input(type='submit', value='Update')
   h2 Loan History
@@ -33,14 +33,15 @@ block content
         th Returned on
         th Action
     tbody
-      for loan in loans
+      for loan, index in loans
         tr
           td
-            a(href='book_detail.html') Harry Potter and the Goblet of Fire
+            a(href='book_detail.html') test
           td
-            a(href='patron_detail.html') Andrew Chalkley
-          td 2015-12-11
-          td 2015-12-18
+            a(href='patron_detail.html') #{patron.first_name} #{patron.last_name}
+          td #{loan.loaned_on}
+          td #{loan.return_by}
+          td #{loan.returned_on}
           td
-          td
-            a.button(href='return_book.html') Return Book
+            if !loan.returned_on
+              a.button(href='/books/return_book/#{loan.book_id}/#{patron}') Return Book
