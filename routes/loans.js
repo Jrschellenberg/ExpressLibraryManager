@@ -12,7 +12,8 @@ router.post('/create', (req, res, next) => {
 	if( !req.body.book_id || !req.body.patron_id || !req.body.loaned_on || !re.test(req.body.loaned_on) ){
 		console.log("hitting error???");
 		let err = new Error("Book, Patron, Loaned On Fields are required!");
-		err.statusCode= 400;
+		err.status = 400;
+		err.link = '/loans/new';
 		return next(err);
 	}
 	Loans.findAll({
@@ -26,13 +27,14 @@ router.post('/create', (req, res, next) => {
 		if(loans.length !==0){
 			console.log("book already being loaned error");
 			let err = new Error("Book Already being loaned!");
-			err.statusCode= 400;
+			err.status = 400;
+			err.link = '/loans/new';
 			return next(err);
 		}
 		Loans.create(req.body).then(() => {
 			res.redirect("/loans/all");
 		}).catch((err) => {
-			res.render("error", {});
+			return next(err);
 		});
 	});
 }, (err, req, res)=> {
@@ -157,8 +159,13 @@ router.get('/new', (req, res, next) => {
 		})
 	});
 }, (req, res)=> {
-	if(!res.headersSent){
-		res.render('loans/new_loan', { title: 'Loans | New', books: req.params.books, patrons: req.params.patrons, loanedOn: req.params.loaned_on, returnBy: req.params.return_by });
+	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
+		res.render('loans/new_loan', {title: 'Loans | New',	books: req.params.books, patrons: req.params.patrons, loanedOn: req.params.loaned_on,
+			returnBy: req.params.return_by,	errorMessage : req.query.errorMessage, errorStatus : req.query.errorStatus, error: req.query.error});
+	}
+	else{
+		res.render('loans/new_loan', {title: 'Loans | New', books: req.params.books,patrons: req.params.patrons,
+			loanedOn: req.params.loaned_on,	returnBy: req.params.return_by});
 	}
 });
 

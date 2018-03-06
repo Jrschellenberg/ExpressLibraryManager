@@ -12,4 +12,10 @@ html
       li
         a(href='/loans/all') Loans
   body
+    if errorMessage
+      h1 #{errorMessage}
+    if errorStatus
+      h1 #{errorStatus}
+    if error
+      h2 #{error}
     block content
