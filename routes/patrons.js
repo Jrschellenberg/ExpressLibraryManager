@@ -9,7 +9,7 @@ const Op = Sequelize.Op;
 
 router.post("/create", (req, res)=> {
 	Patrons.create(req.body).then((patron) => {
-		res.redirect("/books/details/" + patron.id);
+		res.redirect("/patrons/details/" + patron.id);
 	}).catch((err) => {
 		res.render("error", {});
 	});
@@ -38,18 +38,26 @@ router.get("/details/:id", (req, res, next) => {
 	Patrons.findById(req.params.id).then((patron) => {
 		req.params.patron = patron;
 		patron.getLoans().then((loans) => {
-			req.params.loans = loans;
-			let books = [];
-			loans.forEach((loan, index, arry) => {
-				Books.findById(loan.dataValues.book_id).then((book) => {
+			console.log(loans);
+			if(loans.length !== 0){
+				req.params.loans = loans;
+				let books = [];
+				loans.forEach((loan) => {
+					Books.findById(loan.dataValues.book_id).then((book) => {
 						books.push(book.title);
-				}).then(() => {
-					if(books.length === loans.length){
-						req.params.books = books;
-						next();
-					}
+					}).then(() => {
+						if(books.length === loans.length){
+							req.params.books = books;
+							next();
+						}
+					});
 				});
-			});
+			}
+			else{
+				req.params.loans = '';
+				req.params.books = '';
+				next();
+			}
 		});
 	}).catch((err) => {
 		console.log(err);
