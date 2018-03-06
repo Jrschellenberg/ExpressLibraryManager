@@ -25,13 +25,13 @@ router.post('/update/:id', (req, res) => {
 
 router.get('/all', (req, res) => {
 	Patrons.findAll().then((patrons) => {
-		res.render('patrons/all_patrons', { title: 'Patrons', patrons: patrons });
+		res.render('patrons/all_patrons', { title: 'Patrons | All', patrons: patrons });
 		//res.send('test?!?!');
 	});
 });
 
 router.get('/new', (req, res) => {
-	res.render('patrons/new_patron', { title: 'Express' });
+	res.render('patrons/new_patron', { title: 'Patrons | New Patron' });
 });
 
 router.get("/details/:id", (req, res, next) => {
@@ -56,8 +56,7 @@ router.get("/details/:id", (req, res, next) => {
 	});
 }, (req, res)=> {
 	//res.send("WTF");
-	res.render('patrons/patron_details', {title: 'Patrons', patron: req.params.patron, loans: req.params.loans, books: req.params.books});
+	res.render('patrons/patron_details', {title: 'Patrons | Details', patron: req.params.patron, loans: req.params.loans, books: req.params.books});
 });
-
 
 module.exports = router;

@@ -25,12 +25,12 @@ router.post('/update/:id', (req, res) => {
 });
 
 router.get('/new', (req, res) => {
-	res.render('books/new_book', { title: 'Express' });
+	res.render('books/new_book', { title: 'Books | New' });
 });
 
 router.get('/all', (req, res) => {
 	Books.findAll().then((books) => {
-		res.render('books/all_books', { title: 'Express', books: books });
+		res.render('books/all_books', { title: 'Books | All', books: books });
 	});
 });
 
@@ -58,7 +58,7 @@ router.get('/overdue', (req, res, next) => {
 			console.log(err);
 		});
 }, (req, res)=> {
-	res.render('books/all_books', { title: 'Express', books: req.params.books });
+	res.render('books/all_books', { title: 'Books | Overdue', books: req.params.books });
 });
 
 router.get('/checked_out', (req, res, next) => {
@@ -82,7 +82,7 @@ router.get('/checked_out', (req, res, next) => {
 		console.log(err);
 	});
 }, (req, res)=> {
-	res.render('books/all_books', { title: 'Express', books: req.params.books });
+	res.render('books/all_books', { title: 'Books | Checked Out', books: req.params.books });
 });
 
 
@@ -90,7 +90,7 @@ router.get('/return_book/:bookId/:patronName', (req, res) => {
 	Books.findById(req.params.bookId).then((book) => {
 		book.getLoans().then((loan) => {
 			let date = dateFormat(this.createdAt, "yyyy-mm-dd");
-			res.render('books/return_book', { title: 'Return '+book.title, book: book, date: date,
+			res.render('books/return_book', { title: 'Books | Return '+book.title, book: book, date: date,
 				name: req.params.patronName, loan: loan[0] });
 		});
 	});
@@ -106,12 +106,12 @@ router.get('/details/:id', (req, res) => {
 				}
 				return '';
 				}).then((patronName) => {
-				res.render('books/book_detail', { title: book.title, book: book, loans: loans, name: patronName});
+				res.render('books/book_detail', { title: 'Books | Details | '+ book.title, book: book, loans: loans, name: patronName});
 			});
 		}).catch(() => {
 			let loans = '';
 			let patronName = '';
-			res.render('books/book_detail', { title: book.title, book: book, loans: loans, name: patronName});
+			res.render('books/book_detail', { title: 'Books | Details | '+ book.title, book: book, loans: loans, name: patronName});
 		});
 	});
 });
