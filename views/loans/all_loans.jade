@@ -1,6 +1,6 @@
-extends layout
+extends ../layout
 block content
-  h1 Overdue Loans
+  h1 Loans
   p
     a.button(href='new_loan.html') Create New Loan
   p
@@ -20,6 +20,16 @@ block content
         th Returned on
         th Action
     tbody
+      tr
+        td
+          a(href='book_detail.html') Emma
+        td
+          a(href='patron_detail.html') Dave McFarland
+        td 2015-12-10
+        td 2020-10-20
+        td
+        td
+          a.button(href='return_book.html') Return Book
       tr
         td
           a(href='book_detail.html') Harry Potter and the Goblet of Fire
@@ -50,3 +60,12 @@ block content
         td
         td
           a.button(href='return_book.html') Return Book
+      tr
+        td
+          a(href='book_detail.html') The Martian
+        td
+          a(href='patron_detail.html') Michael Poley
+        td 2015-12-13
+        td 2015-12-20
+        td 2015-12-17
+        td
