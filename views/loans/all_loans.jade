@@ -20,15 +20,15 @@ block content
         th Returned on
         th Action
     tbody
-      for loan, index in loans
+      for loan in loans
         tr
           td
-            a(href='book_detail.html') #{books[index].title}
+            a(href='book_detail.html') #{loan.book_title}
           td
-            a(href='patron_detail.html') #{patrons[index].first_name} #{patrons[index].last_name}
+            a(href='patron_detail.html') #{loan.patron_name}
           td #{loan.loaned_on}
           td #{loan.return_by}
           td #{loan.returned_on}
           td
             if !loan.returned_on
-              a.button(href='/books/return_book/#{loan.book_id}/#{patrons[index].first_name} #{patrons[index].last_name}') Return Book
+              a.button(href='/books/return_book/#{loan.book_id}/#{loan.patron_name}') Return Book
