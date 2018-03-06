@@ -7,12 +7,38 @@ const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-router.post('/create', (req, res) => {
-	Loans.create(req.body).then(() => {
-		res.redirect("/loans/all");
-	}).catch((err) => {
-		res.render("error", {});
+router.post('/create', (req, res, next) => {
+	let re = new RegExp("^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$");
+	if( !req.body.book_id || !req.body.patron_id || !req.body.loaned_on || !re.test(req.body.loaned_on) ){
+		console.log("hitting error???");
+		let err = new Error("Book, Patron, Loaned On Fields are required!");
+		err.statusCode= 400;
+		return next(err);
+	}
+	Loans.findAll({
+		where : {
+			book_id: req.body.book_id,
+			return_by: {
+				[Op.ne]: null
+			}
+		}
+	}).then((loans) => {
+		if(loans.length !==0){
+			console.log("book already being loaned error");
+			let err = new Error("Book Already being loaned!");
+			err.statusCode= 400;
+			return next(err);
+		}
+		Loans.create(req.body).then(() => {
+			res.redirect("/loans/all");
+		}).catch((err) => {
+			res.render("error", {});
+		});
 	});
+}, (err, req, res)=> {
+	res.send(err);
+	//	res.render('loans/all_loans', { title: 'Loans | All', loans: req.params.loans } );
+
 });
 
 router.get('/', (req, res) => {
