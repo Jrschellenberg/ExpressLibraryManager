@@ -38,7 +38,6 @@ router.get("/details/:id", (req, res, next) => {
 	Patrons.findById(req.params.id).then((patron) => {
 		req.params.patron = patron;
 		patron.getLoans().then((loans) => {
-			console.log(loans);
 			if(loans.length !== 0){
 				req.params.loans = loans;
 				let books = [];

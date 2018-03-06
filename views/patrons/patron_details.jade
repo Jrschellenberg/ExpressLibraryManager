@@ -36,7 +36,7 @@ block content
       for loan, index in loans
         tr
           td
-            a(href='book_detail.html') test
+            a(href='book_detail.html') #{books[index]}
           td
             a(href='patron_detail.html') #{patron.first_name} #{patron.last_name}
           td #{loan.loaned_on}
