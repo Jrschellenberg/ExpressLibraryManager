@@ -7,7 +7,13 @@ const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-/* GET users listing. */
+router.post('/create', (req, res) => {
+	Loans.create(req.body).then(() => {
+		res.redirect("/loans/all");
+	}).catch((err) => {
+		res.render("error", {});
+	});
+});
 
 router.get('/', (req, res) => {
 	res.send('respond with a resource');
@@ -108,6 +114,25 @@ router.get('/checked_out', (req, res, next) => {
 }, (req, res)=> {
 	if(!res.headersSent){
 		res.render('loans/all_loans', { title: 'Loans | All', loans: req.params.loans } );
+	}
+});
+
+
+router.get('/new', (req, res, next) => {
+	Books.findAll().then((books) => {
+		req.params.books = books;
+		Patrons.findAll().then((patrons) => {
+			req.params.patrons = patrons;
+			let now = Date.now();
+			req.params.loaned_on = dateFormat(now, "yyyy-mm-dd");
+			req.params.return_by = dateFormat(now+(1000*60*60*24*7), "yyyy-mm-dd"); //(1000*60*60*24*4) is 4 days in milliseconds
+		}).then(() => {
+			next();
+		})
+	});
+}, (req, res)=> {
+	if(!res.headersSent){
+		res.render('loans/new_loan', { title: 'Loans | New', books: req.params.books, patrons: req.params.patrons, loanedOn: req.params.loaned_on, returnBy: req.params.return_by });
 	}
 });
 
