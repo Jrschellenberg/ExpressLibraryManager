@@ -26,7 +26,6 @@ router.post('/update/:id', (req, res) => {
 router.get('/all', (req, res) => {
 	Patrons.findAll().then((patrons) => {
 		res.render('patrons/all_patrons', { title: 'Patrons | All', patrons: patrons });
-		//res.send('test?!?!');
 	});
 });
 
@@ -62,7 +61,6 @@ router.get("/details/:id", (req, res, next) => {
 		console.log(err);
 	});
 }, (req, res)=> {
-	//res.send("WTF");
 	res.render('patrons/patron_details', {title: 'Patrons | Details', patron: req.params.patron, loans: req.params.loans, books: req.params.books});
 });
 
