@@ -47,7 +47,7 @@ app.use(function(err, req, res, next) {
   if(err.link){
     res.redirect(err.link+'?errorMessage='+res.locals.message+'&errorStatus='+err.status+'&error='+res.locals.error);
   }
-  else{
+  else{ //Fall back if can't redirect error to same page.
 	  res.render('error', { title: "Error", errorMessage: res.locals.message, errorStatus: err.status, error: res.locals.error });
   }
 });
