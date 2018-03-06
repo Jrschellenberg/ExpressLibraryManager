@@ -22,7 +22,6 @@ router.post('/update/:id', (req, res) => {
 	}).then((book) => {
 		res.redirect("/books/details/" + book.id);
 	});
-	
 });
 
 router.get('/new', (req, res) => {

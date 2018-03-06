@@ -15,6 +15,14 @@ router.post("/create", (req, res)=> {
 	});
 });
 
+router.post('/update/:id', (req, res) => {
+	Patrons.findById(req.params.id).then((patron) => {
+		return patron.update(req.body);
+	}).then((patron) => {
+		res.redirect("/patrons/details/" + patron.id);
+	});
+});
+
 router.get('/all', (req, res) => {
 	Patrons.findAll().then((patrons) => {
 		res.render('patrons/all_patrons', { title: 'Patrons', patrons: patrons });
