@@ -8,15 +8,28 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 
-router.post('/create', (req, res) => {
+router.post('/create', (req, res, next) => {
+	if(!req.body.title || !req.body.author || !req.body.genre){
+		let err = new Error("Book Title, Author, and Genre are required!");
+		err.status = 400;
+		err.link = '/books/new';
+		return next(err);
+	}
 	Books.create(req.body).then((book) => {
 		res.redirect("/books/details/" + book.id);
 	}).catch((err) => {
-		res.render("error", {});
+		err.link = '/books/new';
+		return next(err);
 	});
 });
 
 router.post('/update/:id', (req, res) => {
+	if(!req.body.title || !req.body.author || !req.body.genre){
+		let err = new Error("Book Title, Author, and Genre are required!");
+		err.status = 400;
+		err.link = '/books/details/'+req.params.id;
+		return next(err);
+	}
 	Books.findById(req.params.id).then((book) => {
 		return book.update(req.body);
 	}).then((book) => {
@@ -25,7 +38,13 @@ router.post('/update/:id', (req, res) => {
 });
 
 router.get('/new', (req, res) => {
-	res.render('books/new_book', { title: 'Books | New' });
+	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
+		res.render('books/new_book', {title: 'Books | New', 	errorMessage : req.query.errorMessage, 
+			errorStatus : req.query.errorStatus, error: req.query.error});
+	}
+	else{
+		res.render('books/new_book', {title: 'Books | New'});
+	}
 });
 
 router.get('/find/:filter', (req, res, next) => {
