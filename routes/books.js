@@ -23,11 +23,11 @@ router.post('/create', (req, res, next) => {
 	});
 });
 
-router.post('/update/:id', (req, res) => {
+router.post('/update/:id', (req, res, next) => {
 	if(!req.body.title || !req.body.author || !req.body.genre){
 		let err = new Error("Book Title, Author, and Genre are required!");
 		err.status = 400;
-		err.link = '/books/details/'+req.params.id;
+		err.link = '/books/details/'+req.params.id.toString();
 		return next(err);
 	}
 	Books.findById(req.params.id).then((book) => {
@@ -134,7 +134,11 @@ router.get('/details/:id', (req, res, next) => {
 		next(err);
 	});
 }, (req, res) => {
-	if(!res.headersSent){
+	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
+		res.render('books/book_detail', { title: 'Books | Details | '+ req.params.book.title, book: req.params.book, loans: req.params.loans,
+			errorMessage : req.query.errorMessage, errorStatus : req.query.errorStatus, error: req.query.error});
+	}
+	else{
 		res.render('books/book_detail', { title: 'Books | Details | '+ req.params.book.title, book: req.params.book, loans: req.params.loans});
 	}
 });

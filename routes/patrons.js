@@ -7,15 +7,28 @@ const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-router.post("/create", (req, res)=> {
+router.post("/create", (req, res, next)=> {
+	if(!req.body.first_name || !req.body.last_name || !req.body.address || !req.body.email || !req.body.library_id || !req.body.zip_code){
+		let err = new Error("All Fields are Required!");
+		err.status = 400;
+		err.link = '/patrons/new';
+		return next(err);
+	}
+		
 	Patrons.create(req.body).then((patron) => {
 		res.redirect("/patrons/details/" + patron.id);
 	}).catch((err) => {
-		res.render("error", {});
+		next(err);
 	});
 });
 
-router.post('/update/:id', (req, res) => {
+router.post('/update/:id', (req, res, next) => {
+	if(!req.body.first_name || !req.body.last_name || !req.body.address || !req.body.email || !req.body.library_id || !req.body.zip_code){
+		let err = new Error("All Fields are Required!");
+		err.status = 400;
+		err.link = '/patrons/details/'+req.params.id;
+		return next(err);
+	}
 	Patrons.findById(req.params.id).then((patron) => {
 		return patron.update(req.body);
 	}).then((patron) => {
@@ -30,7 +43,13 @@ router.get('/all', (req, res) => {
 });
 
 router.get('/new', (req, res) => {
-	res.render('patrons/new_patron', { title: 'Patrons | New Patron' });
+	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
+		res.render('patrons/new_patron', {title: 'Patrons | New Patron', errorMessage : req.query.errorMessage,
+			errorStatus : req.query.errorStatus, error: req.query.error});
+	}
+	else{
+		res.render('patrons/new_patron', {title: 'Patrons | New Patron'});
+	}
 });
 
 router.get("/details/:id", (req, res, next) => {
@@ -61,7 +80,24 @@ router.get("/details/:id", (req, res, next) => {
 		console.log(err);
 	});
 }, (req, res)=> {
-	res.render('patrons/patron_details', {title: 'Patrons | Details', patron: req.params.patron, loans: req.params.loans, books: req.params.books});
+	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
+		res.render('patrons/patron_details', {
+			title: 'Patrons | Details',
+			patron: req.params.patron,
+			loans: req.params.loans,
+			books: req.params.books,
+			errorMessage : req.query.errorMessage,
+			errorStatus : req.query.errorStatus, error: req.query.error
+		});
+	}
+	else{
+		res.render('patrons/patron_details', {
+			title: 'Patrons | Details',
+			patron: req.params.patron,
+			loans: req.params.loans,
+			books: req.params.books
+		});
+	}
 });
 
 module.exports = router;
