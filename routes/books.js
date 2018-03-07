@@ -84,7 +84,6 @@ router.get('/find/:filter', (req, res, next) => {
 			Books.findById(loan.book_id).then((book) => {
 				books.push(book);
 			}).then(() => {
-				console.log("hitting this?");
 				if(books.length === loans.length){
 					req.params.books = books;
 					next();

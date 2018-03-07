@@ -62,100 +62,53 @@ router.post('/update/:loanId/:bookId/:name/:loanedOn', (req, res, next) => {
 GET REQUESTS
  */
 
-router.get('/all', (req, res, next) => {
-	Loans.findAll().then((loans) => {
-		let indexBooks = 0;
-		let indexPatrons = 0;
-		loans.forEach((loan) => {
-			Books.findById(loan.book_id).then((book) => {
-				loan.book_title = book.title;
-				indexBooks++;
-			}).then(() => {
-				Patrons.findById(loan.patron_id).then((patron) => {
-					loan.patron_name = patron.first_name + ' ' + patron.last_name;
-					indexPatrons++;
-				}).then(() => {
-					if ((indexBooks === loans.length) && (indexPatrons === loans.length)) {
-						req.params.loans = loans;
-						next();
-					}
-				});
-			});
-		});
-	}).catch((err) => {
-		next(err);
-	});
-}, (req, res) => {
-	res.render('loans/all_loans', {title: 'Loans | All', loans: req.params.loans});
-});
-
-router.get('/overdue', (req, res, next) => {
-	Loans.findAll({
-		where: {
-			return_by: {
-				[Op.lte]: dateFormat(this.createdAt, "yyyy-mm-dd")
-			},
-			returned_on: null
-		}
-	}).then((loans) => {
-		let indexBooks = 0;
-		let indexPatrons = 0;
-		loans.forEach((loan) => {
-			Books.findById(loan.book_id).then((book) => {
-				loan.book_title = book.title;
-				indexBooks++;
-			}).then(() => {
-				Patrons.findById(loan.patron_id).then((patron) => {
-					loan.patron_name = patron.first_name + ' ' + patron.last_name;
-					indexPatrons++;
-				}).then(() => {
-					if ((indexBooks === loans.length) && (indexPatrons === loans.length)) {
-						req.params.loans = loans;
-						next();
-					}
-				});
-			});
-		});
-	}).catch((err) => {
-		next(err);
-	});
-}, (req, res) => {
-	res.render('loans/all_loans', {title: 'Loans | All', loans: req.params.loans});
-});
-
-router.get('/checked_out', (req, res, next) => {
-	Loans.findAll({
-		where: {
-			returned_on: null
-		}
-	}).then((loans) => {
-		let indexBooks = 0;
-		let indexPatrons = 0;
-		loans.forEach((loan) => {
-			Books.findById(loan.book_id).then((book) => {
-				loan.book_title = book.title;
-				indexBooks++;
-			}).then(() => {
-				Patrons.findById(loan.patron_id).then((patron) => {
-					loan.patron_name = patron.first_name + ' ' + patron.last_name;
-					indexPatrons++;
-				}).then(() => {
-					if ((indexBooks === loans.length) && (indexPatrons === loans.length)) {
-						req.params.loans = loans;
-						next();
-					}
-				});
-			});
-		});
-	}).catch((err) => {
-		console.log(err);
-	});
-}, (req, res) => {
-	if (!res.headersSent) {
-		res.render('loans/all_loans', {title: 'Loans | All', loans: req.params.loans});
+router.get('/find/:filter', (req, res, next) => {
+	let obj = {};
+	if(req.params.filter.toLowerCase() === 'overdue'){
+		obj = {
+			where: {
+				return_by: {
+					[Op.lte]: dateFormat(this.createdAt, "yyyy-mm-dd")
+				},
+				returned_on: null
+			}
+		};
 	}
+	else if(req.params.filter.toLowerCase() === 'checked_out'){
+		obj = {
+			where: {
+				returned_on: null
+			}
+		};
+	}
+	else{
+		obj = {};
+	}
+		Loans.findAll(obj).then((loans) => {
+			let indexBooks = 0;
+			let indexPatrons = 0;
+			loans.forEach((loan) => {
+				Books.findById(loan.book_id).then((book) => {
+					loan.book_title = book.title;
+					indexBooks++;
+				}).then(() => {
+					Patrons.findById(loan.patron_id).then((patron) => {
+						loan.patron_name = patron.first_name + ' ' + patron.last_name;
+						indexPatrons++;
+					}).then(() => {
+						if ((indexBooks === loans.length) && (indexPatrons === loans.length)) {
+							req.params.loans = loans;
+							next();
+						}
+					});
+				});
+			});
+		}).catch((err) => {
+			next(err);
+		});
+}, (req, res) => {
+	res.render('loans/all_loans', {title: 'Loans | All', loans: req.params.loans});
 });
-
 
 router.get('/new', (req, res, next) => {
 	Books.findAll().then((books) => {
