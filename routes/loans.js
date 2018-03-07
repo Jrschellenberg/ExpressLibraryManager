@@ -6,9 +6,11 @@ const Loans = require("../models").Loans;
 const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const toDate = require('./utils').toDate;
+
+const re = new RegExp("^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$");
 
 router.post('/create', (req, res, next) => {
-	let re = new RegExp("^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$");
 	if( !req.body.book_id || !req.body.patron_id || !req.body.loaned_on || !re.test(req.body.loaned_on) ){
 		console.log("hitting error???");
 		let err = new Error("Book, Patron, Loaned On Fields are required!");
@@ -38,13 +40,22 @@ router.post('/create', (req, res, next) => {
 }, (err, req, res)=> {
 	res.send(err);
 });
-router.post('/update/:loanId/:bookId/:name', (req, res, next) => {
-	if(!req.body.returned_on){
-		let err = new Error("Requires the Returned On Field filled!");
+router.post('/update/:loanId/:bookId/:name/:loanedOn', (req, res, next) => {
+	if(!req.body.returned_on || !re.test(req.body.returned_on)){
+		let err = new Error("Returned On is required and must be format YYYY-MM-DD");
 		err.status = 400;
 		err.link = '/books/return_book/'+req.params.bookId.toString()+'/'+req.params.name.toString();
 		return next(err);
 	}
+	let returnedOnDate = toDate(req.body.returned_on);
+	let loanedOn = toDate(req.params.loanedOn);
+	if(returnedOnDate < loanedOn){
+		let err = new Error("Returned On Date Must be after book was Loaned!");
+		err.status = 400;
+		err.link = '/books/return_book/'+req.params.bookId.toString()+'/'+req.params.name.toString();
+		return next(err);
+	}
+	
 	Loans.findById(req.params.loanId).then((loan) => {
 		return loan.update(req.body);
 	}).then((loan) => {

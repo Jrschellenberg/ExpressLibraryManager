@@ -13,7 +13,7 @@ block content
   p
     strong Return By: 
     | #{loan.return_by}
-  form(action="/loans/update/"+loan.id+'/'+book.id+'/'+name , method="post")
+  form(action="/loans/update/"+loan.id+'/'+book.id+'/'+name+'/'+loan.loaned_on , method="post")
     p
       label(for='returned_on') Returned on:
       input#returned_on(type='text', value='#{date}', name='returned_on')
