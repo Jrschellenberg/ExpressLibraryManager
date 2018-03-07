@@ -19,9 +19,7 @@ router.post('/create', (req, res, next) => {
 	Loans.findAll({
 		where : {
 			book_id: req.body.book_id,
-			return_by: {
-				[Op.ne]: null
-			}
+			returned_on: null
 		}
 	}).then((loans) => {
 		if(loans.length !==0){
