@@ -15,9 +15,13 @@ POST REQUESTS
  */
 
 router.post('/create', (req, res, next) => {
-	if (!req.body.book_id || !req.body.patron_id || !req.body.loaned_on || !re.test(req.body.loaned_on)) {
-		let err = throwError(400, "Book, Patron, Loaned On Fields are required!", '/loans/new');
-		return next(err);
+	if (!req.body.book_id || !req.body.patron_id || !req.body.loaned_on || !re.test(req.body.loaned_on)
+		|| !req.body.return_by || !re.test(req.body.return_by)) { //Check the values exist and that the dates are in format YYYY-MM-DD
+		return throwError(400, "Book, Patron, Loaned On Fields are required! And Date Fields Must be Format YYYY-MM-DD", '/loans/new', next);
+	}
+	//Now we know dates in format YYYY-MM-DD test to make sure loaned_on comes before return_by.
+	if(toDate(req.body.return_by) < toDate(req.body.loaned_on) ) {
+		return throwError(400, "Return By Date Must be after Date book was Loaned!", '/loans/new', next);
 	}
 	Loans.findAll({
 		where: {
@@ -26,11 +30,10 @@ router.post('/create', (req, res, next) => {
 		}
 	}).then((loans) => {
 		if (loans.length !== 0) {
-			let err = throwError(400, "Book Already being loaned!", '/loans/new');
-			return next(err);
+			return throwError(400, "Book Already being loaned!", '/loans/new', next);
 		}
 		Loans.create(req.body).then(() => {
-			res.redirect("/loans/all");
+			res.redirect("/loans/find/all");
 		}).catch((err) => {
 			return next(err);
 		});
@@ -42,14 +45,10 @@ router.post('/create', (req, res, next) => {
 router.post('/update/:loanId/:bookId/:name/:loanedOn', (req, res, next) => {
 	let link = '/books/return_book/' + req.params.bookId.toString() + '/' + req.params.name.toString();
 	if (!req.body.returned_on || !re.test(req.body.returned_on)) {
-		let err = throwError(400, "Returned On is required and must be format YYYY-MM-DD", link);
-		return next(err);
+		return throwError(400, "Returned On is required and must be format YYYY-MM-DD", link, next);
 	}
-	let returnedOnDate = toDate(req.body.returned_on);
-	let loanedOn = toDate(req.params.loanedOn);
-	if (returnedOnDate < loanedOn) {
-		let err = throwError(400, "Returned On Date Must be after book was Loaned!", link);
-		return next(err);
+	if ( toDate(req.body.returned_on) < toDate(req.params.loanedOn)) {
+		return throwError(400, "Returned On Date Must be after book was Loaned!", link, next);
 	}
 	Loans.findById(req.params.loanId).then((loan) => {
 		return loan.update(req.body);
