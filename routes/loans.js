@@ -8,6 +8,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const toDate = require('./utils').toDate;
 const throwError = require('./utils').throwError;
+const renderView = require('./utils').renderView;
 const re = new RegExp("^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$");
 
 /*
@@ -38,8 +39,6 @@ router.post('/create', (req, res, next) => {
 			return next(err);
 		});
 	});
-}, (err, req, res) => {
-	res.send(err);
 });
 
 router.post('/update/:loanId/:bookId/:name/:loanedOn', (req, res, next) => {
@@ -122,24 +121,8 @@ router.get('/new', (req, res, next) => {
 		})
 	});
 }, (req, res) => {
-	if (req.query.errorMessage && req.query.errorStatus && req.query.error) {
-		res.render('loans/new_loan', {
-			title: 'Loans | New',
-			books: req.params.books,
-			patrons: req.params.patrons,
-			loanedOn: req.params.loaned_on,
-			returnBy: req.params.return_by,
-			errorMessage: req.query.errorMessage,
-			errorStatus: req.query.errorStatus,
-			error: req.query.error
-		});
-	}
-	else {
-		res.render('loans/new_loan', {
-			title: 'Loans | New', books: req.params.books, patrons: req.params.patrons,
-			loanedOn: req.params.loaned_on, returnBy: req.params.return_by
-		});
-	}
+	return renderView('loans/new_loan', {title: 'Loans | New',	books: req.params.books, patrons: req.params.patrons,
+		loanedOn: req.params.loaned_on,	returnBy: req.params.return_by }, req, res);
 });
 
 
