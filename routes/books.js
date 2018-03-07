@@ -96,14 +96,29 @@ router.get('/find/:filter', (req, res, next) => {
 	res.render('books/all_books', { title: 'Books | Overdue', books: req.params.books });
 });
 
-router.get('/return_book/:bookId/:patronName', (req, res) => {
+router.get('/return_book/:bookId/:patronName', (req, res, next) => {
 	Books.findById(req.params.bookId).then((book) => {
-		book.getLoans().then((loan) => {
-			let date = dateFormat(this.createdAt, "yyyy-mm-dd");
-			res.render('books/return_book', { title: 'Books | Return '+book.title, book: book, date: date,
-				name: req.params.patronName, loan: loan[0] });
+		book.getLoans({
+			where: {
+				returned_on : null
+			}
+		}).then((loan) => {
+			req.params.book = book;
+			req.params.date = dateFormat(this.createdAt, "yyyy-mm-dd");
+			req.params.loan = loan[0];
+			next();
 		});
 	});
+}, (req, res) => {
+	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
+		res.render('books/return_book', { title: 'Books | Return '+req.params.book.title, book: req.params.book, date: req.params.date,
+			name: req.params.patronName, loan: req.params.loan,
+			errorMessage : req.query.errorMessage, errorStatus : req.query.errorStatus, error: req.query.error});
+	}
+	else{
+		res.render('books/return_book', { title: 'Books | Return '+req.params.book.title, book: req.params.book, date: req.params.date,
+			name: req.params.patronName, loan: req.params.loan });
+	}
 });
 
 //May have to come back to this. Only grabbing history for 1 patron atm..

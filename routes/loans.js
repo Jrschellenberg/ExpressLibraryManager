@@ -37,9 +37,22 @@ router.post('/create', (req, res, next) => {
 	});
 }, (err, req, res)=> {
 	res.send(err);
-	//	res.render('loans/all_loans', { title: 'Loans | All', loans: req.params.loans } );
-
 });
+router.post('/update/:loanId/:bookId/:name', (req, res, next) => {
+	if(!req.body.returned_on){
+		let err = new Error("Requires the Returned On Field filled!");
+		err.status = 400;
+		err.link = '/books/return_book/'+req.params.bookId.toString()+'/'+req.params.name.toString();
+		return next(err);
+	}
+	Loans.findById(req.params.loanId).then((loan) => {
+		return loan.update(req.body);
+	}).then((loan) => {
+		res.redirect("/books/details/" + loan.book_id);
+	});
+});
+
+
 
 router.get('/', (req, res) => {
 	res.send('respond with a resource');
