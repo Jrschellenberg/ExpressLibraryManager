@@ -107,23 +107,36 @@ router.get('/return_book/:bookId/:patronName', (req, res) => {
 });
 
 //May have to come back to this. Only grabbing history for 1 patron atm..
-router.get('/details/:id', (req, res) => {
+router.get('/details/:id', (req, res, next) => {
 	Books.findById(req.params.id).then((book) => {
+		req.params.book = book;
 		book.getLoans().then((loans) => {
-			Patrons.findById(loans[0].dataValues.patron_id).then((patron) => {
-				if(patron){ //Error handling for no patron name.
-					return patron.first_name + ' ' + patron.last_name;
-				}
-				return '';
-				}).then((patronName) => {
-				res.render('books/book_detail', { title: 'Books | Details | '+ book.title, book: book, loans: loans, name: patronName});
-			});
-		}).catch(() => {
-			let loans = '';
-			let patronName = '';
-			res.render('books/book_detail', { title: 'Books | Details | '+ book.title, book: book, loans: loans, name: patronName});
+			if(loans.length !== 0){
+				let patronIndex = 0;
+				loans.forEach((loan) => {
+					Patrons.findById(loan.dataValues.patron_id).then((patron) => {
+						loan.patron_name = patron.first_name + " " + patron.last_name;
+						patronIndex++;
+					}).then(() => {
+						if(patronIndex === loans.length){
+							req.params.loans = loans;
+							next();
+						}
+					});
+				});
+			}
+			else{
+				req.params.loans = '';
+				next();
+			}
 		});
+	}).catch((err) => {
+		next(err);
 	});
+}, (req, res) => {
+	if(!res.headersSent){
+		res.render('books/book_detail', { title: 'Books | Details | '+ req.params.book.title, book: req.params.book, loans: req.params.loans});
+	}
 });
 
 module.exports = router;
