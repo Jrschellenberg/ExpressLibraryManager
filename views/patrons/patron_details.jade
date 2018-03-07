@@ -36,12 +36,12 @@ block content
       for loan, index in loans
         tr
           td
-            a(href='book_detail.html') #{books[index]}
+            a(href='/books/details/#{loan.book_id}') #{books[index]}
           td
-            a(href='patron_detail.html') #{patron.first_name} #{patron.last_name}
+            a(href='/patrons/details/#{loan.patron_id}') #{patron.first_name} #{patron.last_name}
           td #{loan.loaned_on}
           td #{loan.return_by}
           td #{loan.returned_on}
           td
             if !loan.returned_on
-              a.button(href='/books/return_book/#{loan.book_id}/#{patron}') Return Book
+              a.button(href='/books/return_book/#{loan.book_id}/#{patron.first_name} #{patron.last_name}') Return Book

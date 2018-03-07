@@ -6,10 +6,16 @@ html
   nav
     ul
       li
-        a(href='/books/all') Books
+        a(href='/books/find/all') Books
       li
         a(href='/patrons/all') Patrons
       li
-        a(href='/loans/all') Loans
+        a(href='/loans/find/all') Loans
   body
+    if errorStatus
+      h1.error Status: #{errorStatus}
+    if errorMessage
+      h1.error #{errorMessage}
+    if error
+      h2.error #{error}
     block content
