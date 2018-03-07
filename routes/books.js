@@ -28,13 +28,8 @@ router.get('/new', (req, res) => {
 	res.render('books/new_book', { title: 'Books | New' });
 });
 
-router.get('/all', (req, res) => {
-	Books.findAll().then((books) => {
-		res.render('books/all_books', { title: 'Books | All', books: books });
-	});
-});
-
-router.get('/overdue', (req, res, next) => {
+router.get('/find/:filter', (req, res, next) => {
+	if(req.params.filter.toLowerCase() === 'overdue'){
 		Loans.findAll({
 			where: {
 				return_by: {
@@ -43,48 +38,44 @@ router.get('/overdue', (req, res, next) => {
 				returned_on: null
 			}
 		}).then((loans) => {
-			let books = [];
-			loans.forEach((loan) => {
-				Books.findById(loan.book_id).then((book) => {
-					books.push(book);
-				}).then(() => {
-					if(books.length === loans.length){
-						req.params.books = books;
-						next();
-					}
-				});
-			});
+			findBooks(loans,req, next);
 		}).catch((err) => {
-			console.log(err);
+			next(err);
 		});
-}, (req, res)=> {
-	res.render('books/all_books', { title: 'Books | Overdue', books: req.params.books });
-});
-
-router.get('/checked_out', (req, res, next) => {
-	Loans.findAll({
-		where: {
-			returned_on: null	
-		}
-	}).then((loans) => {
+	}
+	else if(req.params.filter.toLowerCase() === 'checked_out'){
+		Loans.findAll({
+			where: {
+				returned_on: null
+			}
+		}).then((loans) => {
+			findBooks(loans,req, next);
+		}).catch((err) => {
+			next(err);
+		});
+	}
+	else{
+		Books.findAll().then((books) => {
+			res.render('books/all_books', { title: 'Books | All', books: books });
+		});
+	}
+	function findBooks(loans, req, next){
 		let books = [];
 		loans.forEach((loan) => {
 			Books.findById(loan.book_id).then((book) => {
 				books.push(book);
 			}).then(() => {
+				console.log("hitting this?");
 				if(books.length === loans.length){
 					req.params.books = books;
 					next();
 				}
 			});
 		});
-	}).catch((err) => {
-		console.log(err);
-	});
+	}
 }, (req, res)=> {
-	res.render('books/all_books', { title: 'Books | Checked Out', books: req.params.books });
+	res.render('books/all_books', { title: 'Books | Overdue', books: req.params.books });
 });
-
 
 router.get('/return_book/:bookId/:patronName', (req, res) => {
 	Books.findById(req.params.bookId).then((book) => {
