@@ -30,9 +30,9 @@ block content
       for loan in loans
         tr
           td
-            a(href='book_detail.html') #{book.title}
+            a(href='/books/details/#{loan.book_id}') #{book.title}
           td
-            a(href='patron_detail.html') #{loan.patron_name}
+            a(href='/patrons/details/#{loan.patron_id}') #{loan.patron_name}
           td #{loan.loaned_on}
           td #{loan.return_by}
           td #{loan.returned_on}

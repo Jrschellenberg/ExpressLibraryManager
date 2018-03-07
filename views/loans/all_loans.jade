@@ -5,11 +5,11 @@ block content
     a.button(href='/loans/new') Create New Loan
   p
     | Filters 
-    a(href='/loans/all') All
+    a(href='/loans/find/all') All
     | |
-    a(href='/loans/overdue') Overdue
+    a(href='/loans/find/overdue') Overdue
     | |
-    a(href='/loans/checked_out') Checked Out
+    a(href='/loans/find/checked_out') Checked Out
   table
     thead
       tr
@@ -23,9 +23,9 @@ block content
       for loan in loans
         tr
           td
-            a(href='book_detail.html') #{loan.book_title}
+            a(href='/books/details/#{loan.book_id}') #{loan.book_title}
           td
-            a(href='patron_detail.html') #{loan.patron_name}
+            a(href='/patrons/details/#{loan.patron_id}') #{loan.patron_name}
           td #{loan.loaned_on}
           td #{loan.return_by}
           td #{loan.returned_on}
