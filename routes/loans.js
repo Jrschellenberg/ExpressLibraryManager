@@ -7,6 +7,7 @@ const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const toDate = require('./utils').toDate;
+const throwError = require('./utils').throwError;
 
 const re = new RegExp("^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$");
 
@@ -42,9 +43,8 @@ router.post('/create', (req, res, next) => {
 });
 router.post('/update/:loanId/:bookId/:name/:loanedOn', (req, res, next) => {
 	if(!req.body.returned_on || !re.test(req.body.returned_on)){
-		let err = new Error("Returned On is required and must be format YYYY-MM-DD");
-		err.status = 400;
-		err.link = '/books/return_book/'+req.params.bookId.toString()+'/'+req.params.name.toString();
+		let err = throwError(400, "Returned On is required and must be format YYYY-MM-DD",
+			'/books/return_book/'+req.params.bookId.toString()+'/'+req.params.name.toString());
 		return next(err);
 	}
 	let returnedOnDate = toDate(req.body.returned_on);
