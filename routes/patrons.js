@@ -6,15 +6,14 @@ const Loans = require("../models").Loans;
 const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const toDate = require('./utils').toDate;
+const throwError = require('./utils').throwError;
+const renderView = require('./utils').renderView;
 
 router.post("/create", (req, res, next)=> {
 	if(!req.body.first_name || !req.body.last_name || !req.body.address || !req.body.email || !req.body.library_id || !req.body.zip_code){
-		let err = new Error("All Fields are Required!");
-		err.status = 400;
-		err.link = '/patrons/new';
-		return next(err);
+		return throwError(400, "All Fields are Required!", '/patrons/new', next);
 	}
-		
 	Patrons.create(req.body).then((patron) => {
 		res.redirect("/patrons/details/" + patron.id);
 	}).catch((err) => {
@@ -24,10 +23,7 @@ router.post("/create", (req, res, next)=> {
 
 router.post('/update/:id', (req, res, next) => {
 	if(!req.body.first_name || !req.body.last_name || !req.body.address || !req.body.email || !req.body.library_id || !req.body.zip_code){
-		let err = new Error("All Fields are Required!");
-		err.status = 400;
-		err.link = '/patrons/details/'+req.params.id;
-		return next(err);
+		return throwError(400, "All Fields are Required!", '/patrons/details/'+req.params.id, next )
 	}
 	Patrons.findById(req.params.id).then((patron) => {
 		return patron.update(req.body);
@@ -43,13 +39,7 @@ router.get('/all', (req, res) => {
 });
 
 router.get('/new', (req, res) => {
-	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
-		res.render('patrons/new_patron', {title: 'Patrons | New Patron', errorMessage : req.query.errorMessage,
-			errorStatus : req.query.errorStatus, error: req.query.error});
-	}
-	else{
-		res.render('patrons/new_patron', {title: 'Patrons | New Patron'});
-	}
+	return renderView('patrons/new_patron', {title: 'Patrons | New Patron'}, req, res);
 });
 
 router.get("/details/:id", (req, res, next) => {
@@ -80,24 +70,8 @@ router.get("/details/:id", (req, res, next) => {
 		console.log(err);
 	});
 }, (req, res)=> {
-	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
-		res.render('patrons/patron_details', {
-			title: 'Patrons | Details',
-			patron: req.params.patron,
-			loans: req.params.loans,
-			books: req.params.books,
-			errorMessage : req.query.errorMessage,
-			errorStatus : req.query.errorStatus, error: req.query.error
-		});
-	}
-	else{
-		res.render('patrons/patron_details', {
-			title: 'Patrons | Details',
-			patron: req.params.patron,
-			loans: req.params.loans,
-			books: req.params.books
-		});
-	}
+	return renderView('patrons/patron_details',  {title: 'Patrons | Details',	patron: req.params.patron, 
+		loans: req.params.loans,	books: req.params.books}, req, res);
 });
 
 module.exports = router;

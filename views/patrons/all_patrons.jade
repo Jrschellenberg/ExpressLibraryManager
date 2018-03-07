@@ -15,7 +15,7 @@ block content
       for patron in patrons
         tr
           td
-            a(href='/patrons/new') #{patron.first_name} #{patron.last_name}
+            a(href='/patrons/details/#{patron.id}') #{patron.first_name} #{patron.last_name}
           td #{patron.address}
           td #{patron.email}
           td #{patron.library_id}

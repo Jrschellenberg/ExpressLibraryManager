@@ -6,14 +6,17 @@ const Loans = require("../models").Loans;
 const dateFormat = require('dateformat');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const toDate = require('./utils').toDate;
+const throwError = require('./utils').throwError;
+const renderView = require('./utils').renderView;
 
+/*
+POST ROUTES
+ */
 
 router.post('/create', (req, res, next) => {
 	if(!req.body.title || !req.body.author || !req.body.genre){
-		let err = new Error("Book Title, Author, and Genre are required!");
-		err.status = 400;
-		err.link = '/books/new';
-		return next(err);
+		return throwError(400, "Book Title, Author, and Genre are required!", "/books/new", next);
 	}
 	Books.create(req.body).then((book) => {
 		res.redirect("/books/details/" + book.id);
@@ -25,10 +28,7 @@ router.post('/create', (req, res, next) => {
 
 router.post('/update/:id', (req, res, next) => {
 	if(!req.body.title || !req.body.author || !req.body.genre){
-		let err = new Error("Book Title, Author, and Genre are required!");
-		err.status = 400;
-		err.link = '/books/details/'+req.params.id.toString();
-		return next(err);
+		return throwError(400, "Book Title, Author, and Genre are required!", '/books/details/'+req.params.id.toString(), next);
 	}
 	Books.findById(req.params.id).then((book) => {
 		return book.update(req.body);
@@ -37,14 +37,12 @@ router.post('/update/:id', (req, res, next) => {
 	});
 });
 
+/*
+GET ROUTES
+ */
+
 router.get('/new', (req, res) => {
-	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
-		res.render('books/new_book', {title: 'Books | New', 	errorMessage : req.query.errorMessage, 
-			errorStatus : req.query.errorStatus, error: req.query.error});
-	}
-	else{
-		res.render('books/new_book', {title: 'Books | New'});
-	}
+	return renderView("books/new_book", {title: 'Books | New'}, req, res);
 });
 
 router.get('/find/:filter', (req, res, next) => {
@@ -109,18 +107,10 @@ router.get('/return_book/:bookId/:patronName', (req, res, next) => {
 		});
 	});
 }, (req, res) => {
-	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
-		res.render('books/return_book', { title: 'Books | Return '+req.params.book.title, book: req.params.book, date: req.params.date,
-			name: req.params.patronName, loan: req.params.loan,
-			errorMessage : req.query.errorMessage, errorStatus : req.query.errorStatus, error: req.query.error});
-	}
-	else{
-		res.render('books/return_book', { title: 'Books | Return '+req.params.book.title, book: req.params.book, date: req.params.date,
-			name: req.params.patronName, loan: req.params.loan });
-	}
+	return renderView('books/return_book', { title: 'Books | Return '+req.params.book.title, book: req.params.book, date: req.params.date,
+		name: req.params.patronName, loan: req.params.loan}, req, res);
 });
 
-//May have to come back to this. Only grabbing history for 1 patron atm..
 router.get('/details/:id', (req, res, next) => {
 	Books.findById(req.params.id).then((book) => {
 		req.params.book = book;
@@ -148,13 +138,7 @@ router.get('/details/:id', (req, res, next) => {
 		next(err);
 	});
 }, (req, res) => {
-	if(req.query.errorMessage && req.query.errorStatus && req.query.error ) {
-		res.render('books/book_detail', { title: 'Books | Details | '+ req.params.book.title, book: req.params.book, loans: req.params.loans,
-			errorMessage : req.query.errorMessage, errorStatus : req.query.errorStatus, error: req.query.error});
-	}
-	else{
-		res.render('books/book_detail', { title: 'Books | Details | '+ req.params.book.title, book: req.params.book, loans: req.params.loans});
-	}
+	return renderView('books/book_detail', { title: 'Books | Details | '+ req.params.book.title, book: req.params.book, loans: req.params.loans}, req, res);
 });
 
 module.exports = router;
