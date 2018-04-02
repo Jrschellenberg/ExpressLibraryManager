@@ -1,4 +1,4 @@
-# TeamTreeHouseProject10
+# ExpressLibrary Manager
 A Sample project creating a Library Manager using Express, Sequelize and Jade
 
 # Getting Started
