@@ -1,4 +1,4 @@
-# ExpressLibrary Manager
+# Express Library Manager
 A Sample project creating a Library Manager using Express, Sequelize and Jade
 
 # Getting Started
