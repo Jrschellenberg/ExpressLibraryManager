@@ -9,7 +9,7 @@ services:
     ports:
       - "27017:27017"
   caddy:
-    image: abiosoft/caddy:latest
+    image: abiosoft/caddy:0.10.11
     restart: always
     container_name: caddy
     ports:
