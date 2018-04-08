@@ -1,0 +1,10 @@
+expresslibrary.schellenberg.site {
+  tls jrschellenberg@gmail.com
+
+  log /var/log/caddy.log
+
+  proxy / expressLibrary:8010 {
+    transparent
+  }
+  gzip
+}
