@@ -19,7 +19,7 @@
     "jade": "~1.11.0",
     "method-override": "^2.3.5",
     "morgan": "~1.9.0",
-    "sequelize": "^4.34.0",
+    "sequelize": "^5.1.0",
     "sequelize-cli": "^4.0.0",
     "serve-favicon": "~2.4.5",
     "sqlite3": "^3.1.13"
